@@ -10,7 +10,6 @@
             background: linear-gradient(to bottom, #0d1117, #161b22);
             color: white; display: flex; flex-direction: column; height: 100vh;
         }
-        /* Top Admin Bar - Direct API Key Box */
         .admin-top-bar {
             background-color: #1f242c; padding: 10px 15px; border-bottom: 1px solid #30363d;
             display: flex; gap: 10px; align-items: center; justify-content: center;
@@ -19,16 +18,11 @@
             flex: 1; max-width: 500px; padding: 8px 12px; border: 1px solid #30363d;
             border-radius: 6px; background-color: #0d1117; color: white; font-size: 13px; outline: none;
         }
-        .admin-top-bar input:focus { border-color: #58a6ff; }
         .admin-top-bar button {
             padding: 8px 15px; background-color: #238636; border: none; color: white;
             border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;
         }
-
-        /* Layout Container */
         .app-container { display: flex; flex: 1; overflow: hidden; }
-
-        /* Sidebar for Chat History */
         .sidebar {
             width: 260px; background-color: #1f242c; border-right: 1px solid #30363d;
             display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; gap: 10px;
@@ -41,9 +35,155 @@
         }
         .history-item:hover { background-color: #1f6feb; }
         .clear-btn { padding: 6px; border: none; border-radius: 5px; background-color: #da3637; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
-
-        /* Main Chat Area */
         .main-chat { flex: 1; display: flex; flex-direction: column; }
         .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .bubble { max-width: 75%; padding: 12px 16px; margin: 5px 0; border-radius: 15px; line-height: 1.4; word-wrap: break-word; font-size: 16px; }
-        .user { background-color: #1f6feb; align-self: flex-end; border-bottom-right-radius:
+        .user { background-color: #1f6feb; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .ai { background-color: #30363d; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .loading { color: #8b949e; font-style: italic; font-size: 14px; align-self: flex-start; padding-left: 10px; }
+        .input-area { padding: 15px; background-color: #1f242c; display: flex; gap: 10px; border-top: 1px solid #30363d; }
+        .input-area input { flex: 1; padding: 12px; border: 1px solid #30363d; border-radius: 25px; background-color: #0d1117; color: white; font-size: 16px; outline: none; }
+        .input-area button { padding: 12px 24px; border: none; border-radius: 25px; background-color: #238636; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-top-bar">
+        <input type="password" id="apiKeyInput" placeholder="Paste your Gemini API Key here to activate Deep Chat...">
+        <button onclick="saveApiKey()">Activate AI</button>
+    </div>
+
+    <div class="app-container">
+        <div class="sidebar">
+            <h2>Chat History</h2>
+            <div class="history-list" id="historyList"></div>
+            <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+        </div>
+
+        <div class="main-chat">
+            <div class="chat-container" id="chatBox">
+                <div class="bubble ai">Hi I am deep chat how can I help you</div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Type a message..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const savedKey = localStorage.getItem("user_gemini_key");
+            if (savedKey) {
+                document.getElementById("apiKeyInput").value = savedKey;
+            }
+            loadHistoryList();
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById("apiKeyInput").value.trim();
+            if(key === "") {
+                alert("Please paste a valid API key!");
+                return;
+            }
+            localStorage.setItem("user_gemini_key", key);
+            alert("Babal! Deep Chat AI is now Active and ready!");
+        }
+
+        function loadHistoryList() {
+            const historyList = document.getElementById("historyList");
+            historyList.innerHTML = "";
+            const savedChats = JSON.parse(localStorage.getItem("deep_chat_history")) || [];
+            savedChats.forEach((chat) => {
+                const item = document.createElement("div");
+                item.className = "history-item";
+                item.innerText = chat.query;
+                item.onclick = function() { showPastChat(chat.query, chat.reply); };
+                historyList.appendChild(item);
+            });
+        }
+
+        function showPastChat(query, reply) {
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = '<div class="bubble ai">Hi I am deep chat how can I help you</div>';
+            const uB = document.createElement("div"); uB.className = "bubble user"; uB.innerText = query; chatBox.appendChild(uB);
+            const aB = document.createElement("div"); aB.className = "bubble ai"; aB.innerText = reply; chatBox.appendChild(aB);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function clearHistory() {
+            localStorage.removeItem("deep_chat_history");
+            loadHistoryList();
+            document.getElementById("chatBox").innerHTML = '<div class="bubble ai">Hi I am deep chat how can I help you</div>';
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById("userInput");
+            const chatBox = document.getElementById("chatBox");
+            const messageText = inputField.value.trim();
+            const apiKey = localStorage.getItem("user_gemini_key") || document.getElementById("apiKeyInput").value.trim();
+
+            if (messageText === "") return;
+
+            if (!apiKey || apiKey === "") {
+                alert("Please enter your Gemini API Key in the top bar and click Activate AI first!");
+                return;
+            }
+
+            const userBubble = document.createElement("div");
+            userBubble.className = "bubble user";
+            userBubble.innerText = messageText;
+            chatBox.appendChild(userBubble);
+
+            inputField.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingIndicator = document.createElement("div");
+            loadingIndicator.className = "loading";
+            loadingIndicator.id = "loadingId";
+            loadingIndicator.innerText = "Deep Chat is thinking...";
+            chatBox.appendChild(loadingIndicator);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const systemPrompt = "You are Deep Chat AI, a global smart assistant. Detect user language (English, Nepali, Hindi) automatically and reply in that language perfectly.";
+
+                const response = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt + "\n\nUser: " + messageText }] }] })
+                });
+
+                const data = await response.json();
+                document.getElementById("loadingId").remove();
+
+                const aiBubble = document.createElement("div");
+                aiBubble.className = "bubble ai";
+
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    const aiReply = data.candidates[0].content.parts[0].text;
+                    aiBubble.innerText = aiReply;
+                    
+                    const savedChats = JSON.parse(localStorage.getItem("deep_chat_history")) || [];
+                    savedChats.unshift({ query: messageText, reply: aiReply });
+                    localStorage.setItem("deep_chat_history", JSON.stringify(savedChats));
+                    loadHistoryList();
+                } else {
+                    aiBubble.innerText = "API key issue. Please check your Google AI Studio key.";
+                }
+                chatBox.appendChild(aiBubble);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+            } catch (error) {
+                if(document.getElementById("loadingId")) document.getElementById("loadingId").remove();
+                const errorBubble = document.createElement("div");
+                errorBubble.className = "bubble ai";
+                errorBubble.innerText = "Connection error. Please try again.";
+                chatBox.appendChild(errorBubble);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
