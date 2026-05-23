@@ -6,48 +6,55 @@
     <title>Deep Chat AI</title>
     <style>
         body {
-            margin: 0; padding: 0; font-family: Arial, sans-serif;
+            margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(to bottom, #0d1117, #161b22);
             color: white; display: flex; flex-direction: column; height: 100vh;
         }
         .top-bar { padding: 15px; display: flex; justify-content: space-between; align-items: center; background-color: #1f242c; border-bottom: 1px solid #30363d; }
         .top-bar h1 { margin: 0; font-size: 24px; color: #58a6ff; }
-        .top-bar p { margin: 5px 0 0 0; color: gray; font-size: 14px; }
+        .top-bar p { margin: 5px 0 0 0; color: #8b949e; font-size: 14px; }
         .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 75%; padding: 12px 16px; margin: 5px 0; border-radius: 15px; line-height: 1.4; word-wrap: break-word; }
+        .bubble { max-width: 75%; padding: 12px 16px; margin: 5px 0; border-radius: 15px; line-height: 1.4; word-wrap: break-word; font-size: 16px; }
         .user { background-color: #1f6feb; align-self: flex-end; border-bottom-right-radius: 2px; }
         .ai { background-color: #30363d; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .loading { color: #8b949e; font-style: italic; font-size: 14px; align-self: flex-start; padding-left: 10px; }
         .input-area { padding: 15px; background-color: #1f242c; display: flex; gap: 10px; border-top: 1px solid #30363d; }
         .input-area input { flex: 1; padding: 12px; border: 1px solid #30363d; border-radius: 25px; background-color: #0d1117; color: white; font-size: 16px; outline: none; }
-        .input-area button { padding: 12px 24px; border: none; border-radius: 25px; background-color: #238636; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .input-area input:focus { border-color: #58a6ff; }
+        .input-area button { padding: 12px 24px; border: none; border-radius: 25px; background-color: #238636; color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .input-area button:hover { background-color: #2ea043; }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
         <div>
-            <h1>Deep Chat</h1>
-            <p>Offline Mobile Smart AI</p>
+            <h1>Deep Chat AI</h1>
+            <p>Global Multi-Language Smart AI</p>
         </div>
     </div>
 
     <div class="chat-container" id="chatBox">
-        <div class="bubble ai">नमस्ते साथी! मेरो सेन्ड बटन अब चल्ने भयो। मलाई केही सोध न!</div>
+        <div class="bubble ai">Hello! I am Deep Chat AI. Ask me anything in English, नेपाली, or हिन्दी. I will reply in the same language!</div>
     </div>
 
     <div class="input-area">
-        <input type="text" id="userInput" placeholder="यहाँ टाइप गर्नुहोस्...">
+        <input type="text" id="userInput" placeholder="Ask anything / यहाँ केही सोध्नुहोस्..." onkeydown="if(event.key === 'Enter') sendMessage()">
         <button onclick="sendMessage()">Send</button>
     </div>
 
     <script>
-        function sendMessage() {
+        // यहाँ आफ्नो Google Gemini API Key हाल्नुपर्छ (म तल सिकाउँछु कसरी लिने)
+        const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
+
+        async function sendMessage() {
             const inputField = document.getElementById("userInput");
             const chatBox = document.getElementById("chatBox");
             const messageText = inputField.value.trim();
 
             if (messageText === "") return;
 
+            // १. युजरको म्यासेज स्क्रिनमा देखाउने
             const userBubble = document.createElement("div");
             userBubble.className = "bubble user";
             userBubble.innerText = messageText;
@@ -56,13 +63,54 @@
             inputField.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            setTimeout(() => {
+            // २. एआईले सोच्दैछ भनेर 'Loading...' देखाउने
+            const loadingIndicator = document.createElement("div");
+            loadingIndicator.className = "loading";
+            loadingIndicator.id = "loadingId";
+            loadingIndicator.innerText = "Deep Chat is thinking...";
+            chatBox.appendChild(loadingIndicator);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // ३. गुगल एआई (Gemini) सँग उत्तर माग्ने
+            try {
+                // युजरले जुन भाषामा सोधेको छ, त्यही भाषामा उत्तर दिन एआईलाई कडा निर्देशन (System Instruction)
+                const systemPrompt = "You are Deep Chat AI, a smart global assistant. Detect the user's language automatically. If they ask in English, reply in English. If they ask in Nepali, reply in Nepali. If they ask in Hindi, reply in Hindi. Always match the user's language and give accurate answers to any question.";
+
+                const response = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ 
+                            parts: [{ text: systemPrompt + "\n\nUser Question: " + messageText }] 
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                // लोड भइरहेको टेक्स्ट हटाउने
+                document.getElementById("loadingId").remove();
+
                 const aiBubble = document.createElement("div");
                 aiBubble.className = "bubble ai";
-                aiBubble.innerText = "बबाल साथी! तिम्रो म्यासेज मैले पाएँ। तिम्रो एप अब मज्जाले चल्दैछ!";
+
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    aiBubble.innerText = data.candidates[0].content.parts[0].text;
+                } else {
+                    aiBubble.innerText = "Sorry, I am having trouble connecting to my brain right now. Please try again.";
+                }
+
                 chatBox.appendChild(aiBubble);
                 chatBox.scrollTop = chatBox.scrollHeight;
-            }, 400);
+
+            } catch (error) {
+                document.getElementById("loadingId").remove();
+                const errorBubble = document.createElement("div");
+                errorBubble.className = "bubble ai";
+                errorBubble.innerText = "Error: Please check your internet connection or API key setup.";
+                chatBox.appendChild(errorBubble);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
         }
     </script>
 
