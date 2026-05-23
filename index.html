@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Chat AI</title>
+    <style>
+        body {
+            margin: 0; padding: 0; font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #09090b, #111827, #000000);
+            color: white; display: flex; flex-direction: column; height: 100vh;
+        }
+        .top-bar { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; }
+        .top-bar h1 { margin: 0; font-size: 24px; }
+        .top-bar p { margin: 5px 0 0 0; color: gray; font-size: 14px; }
+        .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
+        .bubble { max-width: 75%; padding: 12px 16px; margin: 8px 0; border-radius: 20px; line-height: 1.5; font-size: 16px; }
+        .user { background-color: #7c3aed; align-self: flex-end; }
+        .ai { background-color: #1f2937; align-self: flex-start; }
+        .typing { color: gray; font-style: italic; margin: 5px; display: none; }
+        .input-bar { padding: 15px; display: flex; background-color: #111827; border-top: 1px solid #1f2937; }
+        input { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; padding: 10px; }
+        button { background-color: #8b5cf6; border: none; color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div>
+            <h1>Deep Chat</h1>
+            <p>Offline AI • No Ads • Free</p>
+        </div>
+        <button onclick="clearChat()" style="background:transparent; color:red; padding:5px; cursor:pointer;">Delete All</button>
+    </div>
+
+    <div class="chat-container" id="chatBox">
+        <div class="bubble ai">👋 Welcome to Deep Chat AI<br>Offline International Assistant</div>
+    </div>
+    <div class="typing" id="status">Deep AI is thinking...</div>
+
+    <div class="input-bar">
+        <input type="text" id="userInput" placeholder="Ask anything...">
+        <button onclick="askAI()">Send</button>
+    </div>
+
+    <script>
+        function askAI() {
+            let input = document.getElementById("userInput").value;
+            if(!input.trim()) return;
+            
+            let chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML += <div class="bubble user">${input}</div>;
+            document.getElementById("userInput").value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            document.getElementById("status").style.display = "block";
+
+            setTimeout(() => {
+                document.getElementById("status").style.display = "none";
+                let reply = generateResponse(input);
+                chatBox.innerHTML += <div class="bubble ai">${reply}</div>;
+                chatBox.scrollTop = chatBox.scrollHeight;
+                
+                // बोलीको लागि (Text to Speech)
+                let speech = new SpeechSynthesisUtterance(reply);
+                speech.lang = 'en-US';
+                window.speechSynthesis.speak(speech);
+            }, 800);
+        }
+
+        function generateResponse(prompt) {
+            let p = prompt.toLowerCase();
+            if(p.includes("hello") || p.includes("hi")) return "Hello 👋 I am Deep Chat AI. How can I help you today?";
+            if(p.includes("नेपाल") || p.includes("nepal")) return "नेपाल दक्षिण एशियामा रहेको एउटा जलश्रोत र प्राकृतिक सम्पदाले भरिपूर्ण सुन्दर देश हो 🇳🇵।";
+            if(p.includes("who are you") || p.includes("तपाई को हो")) return "I am Deep Chat AI, your trusted offline international smart assistant.";
+            if(p.includes("code") || p.includes("कोडिङ")) return "I can write and debug code in HTML, CSS, JavaScript, and Kotlin effortlessly!";
+            if(p.includes("cube") || p.includes("क्युब")) return "Rubik's Cube को वर्ल्ड रेकर्ड जम्मा ३.१३ सेकेन्डको छ! के तिमी क्युब मिलाउन सक्छौ? 🎲";
+            if(p.includes("money") || p.includes("पैसा")) return "अमीर बन्ने कडा उपाय: हाइ-भ्यालु स्किल (कोडिङ/डिजिटल मार्केटिङ) सिक्ने र अनलाइन कन्टेन्ट बनाउने! 💸";
+            if(p.includes("study") || p.includes("पढाई")) return "📚 Top Study Tip: Use the Feynman Technique—try to explain the topic to a 5-year-old in simple words.";
+            if(p.includes("school") || p.includes("स्कुल")) return "School को आविष्कार १८औं शताब्दीमा 'Horace Mann' ले गरेका थिए। 🎒";
+            
+            return 🤖 Deep Chat AI Response\n\nYou asked: "${prompt}"\n\nThis super-fast response is generated 100% offline without internet.;
+        }
+
+        function clearChat() {
+            document.getElementById("chatBox").innerHTML = <div class="bubble ai">👋 Welcome to Deep Chat AI<br>Offline International Assistant</div>;
+        }
+    </script>
+</body>
+</html>
