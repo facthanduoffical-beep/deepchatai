@@ -8,207 +8,42 @@
         body {
             margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(to bottom, #0d1117, #161b22);
-            color: white; display: flex; height: 100vh; overflow: hidden;
+            color: white; display: flex; flex-direction: column; height: 100vh;
         }
-        /* Sidebar - सुरुमा यो लुकेको हुन्छ (display: none) */
+        /* Top Admin Bar - Direct API Key Box */
+        .admin-top-bar {
+            background-color: #1f242c; padding: 10px 15px; border-bottom: 1px solid #30363d;
+            display: flex; gap: 10px; align-items: center; justify-content: center;
+        }
+        .admin-top-bar input {
+            flex: 1; max-width: 500px; padding: 8px 12px; border: 1px solid #30363d;
+            border-radius: 6px; background-color: #0d1117; color: white; font-size: 13px; outline: none;
+        }
+        .admin-top-bar input:focus { border-color: #58a6ff; }
+        .admin-top-bar button {
+            padding: 8px 15px; background-color: #238636; border: none; color: white;
+            border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;
+        }
+
+        /* Layout Container */
+        .app-container { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar for Chat History */
         .sidebar {
-            width: 280px; background-color: #1f242c; border-right: 1px solid #30363d;
-            display: none; flex-direction: column; padding: 15px; box-sizing: border-box; gap: 15px;
+            width: 260px; background-color: #1f242c; border-right: 1px solid #30363d;
+            display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; gap: 10px;
         }
-        .sidebar h2 { margin: 0; font-size: 18px; color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
+        .sidebar h2 { margin: 0; font-size: 16px; color: #58a6ff; padding-bottom: 5px; border-bottom: 1px solid #30363d; }
         .history-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .history-item {
-            padding: 10px; background-color: #30363d; border-radius: 8px; font-size: 14px;
+            padding: 10px; background-color: #30363d; border-radius: 8px; font-size: 13px;
             cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .history-item:hover { background-color: #1f6feb; }
-        
-        .admin-box { background-color: #161b22; border: 1px solid #30363d; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
-        .admin-box h3 { margin: 0; font-size: 14px; color: #58a6ff; }
-        .admin-box textarea {
-            width: 100%; height: 60px; background-color: #0d1117; color: white; border: 1px solid #30363d;
-            border-radius: 5px; padding: 5px; box-sizing: border-box; font-size: 12px; resize: none; outline: none;
-        }
-        .update-btn { padding: 6px; background-color: #238636; border: none; color: white; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .clear-btn { padding: 6px; border: none; border-radius: 5px; background-color: #da3637; color: white; font-weight: bold; cursor: pointer; }
+        .clear-btn { padding: 6px; border: none; border-radius: 5px; background-color: #da3637; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
 
         /* Main Chat Area */
-        .main-chat { flex: 1; display: flex; flex-direction: column; height: 100vh; }
-        .top-bar { padding: 15px; display: flex; justify-content: space-between; align-items: center; background-color: #1f242c; border-bottom: 1px solid #30363d; }
-        .top-bar h1 { margin: 0; font-size: 24px; color: #58a6ff; }
-        
-        /* API Key बक्स पनि सुरुमा लुकेको हुन्छ */
-        .key-area { display: none; gap: 8px; width: 60%; }
-        .key-area input { flex: 1; padding: 8px 12px; border: 1px solid #30363d; border-radius: 6px; background-color: #0d1117; color: white; font-size: 13px; outline: none; }
-        
+        .main-chat { flex: 1; display: flex; flex-direction: column; }
         .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .bubble { max-width: 75%; padding: 12px 16px; margin: 5px 0; border-radius: 15px; line-height: 1.4; word-wrap: break-word; font-size: 16px; }
-        .user { background-color: #1f6feb; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .ai { background-color: #30363d; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .loading { color: #8b949e; font-style: italic; font-size: 14px; align-self: flex-start; padding-left: 10px; }
-        
-        .input-area { padding: 15px; background-color: #1f242c; display: flex; gap: 10px; border-top: 1px solid #30363d; }
-        .input-area input { flex: 1; padding: 12px; border: 1px solid #30363d; border-radius: 25px; background-color: #0d1117; color: white; font-size: 16px; outline: none; }
-        .input-area button { padding: 12px 24px; border: none; border-radius: 25px; background-color: #238636; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-    <div class="sidebar" id="adminSidebar">
-        <h2>AI Admin Control</h2>
-        <div class="admin-box">
-            <h3>Update AI Rules:</h3>
-            <textarea id="aiCustomRules" placeholder="Example: Always talk nicely about Choco Bar."></textarea>
-            <button class="update-btn" onclick="saveAiRules()">Update AI Brain</button>
-        </div>
-
-        <h2>Chat History</h2>
-        <div class="history-list" id="historyList"></div>
-        <button class="clear-btn" onclick="clearHistory()">Clear History</button>
-    </div>
-
-    <div class="main-chat">
-        <div class="top-bar">
-            <h1>Deep Chat AI</h1>
-            <div class="key-area" id="adminKeyArea">
-                <input type="password" id="apiKeyInput" placeholder="Enter Gemini API Key here...">
-            </div>
-        </div>
-
-        <div class="chat-container" id="chatBox">
-            <div class="bubble ai">Hi I am deep chat how can I help you</div>
-        </div>
-
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Type a message..." onkeydown="if(event.key === 'Enter') sendMessage()">
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
-
-    <script>
-        window.onload = function() {
-            const savedKey = localStorage.getItem("user_gemini_key");
-            if (savedKey) { document.getElementById("apiKeyInput").value = savedKey; }
-            
-            const savedRules = localStorage.getItem("custom_ai_rules");
-            if (savedRules) { document.getElementById("aiCustomRules").value = savedRules; }
-            
-            loadHistoryList();
-        }
-
-        function saveAiRules() {
-            const rules = document.getElementById("aiCustomRules").value.trim();
-            localStorage.setItem("custom_ai_rules", rules);
-            alert("Babal! AI Brain updated successfully.");
-        }
-
-        function loadHistoryList() {
-            const historyList = document.getElementById("historyList");
-            historyList.innerHTML = "";
-            const savedChats = JSON.parse(localStorage.getItem("deep_chat_history")) || [];
-            savedChats.forEach((chat) => {
-                const item = document.createElement("div");
-                item.className = "history-item";
-                item.innerText = chat.query;
-                item.onclick = function() { showPastChat(chat.query, chat.reply); };
-                historyList.appendChild(item);
-            });
-        }
-
-        function showPastChat(query, reply) {
-            const chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML = '<div class="bubble ai">Hi I am deep chat how can I help you</div>';
-            const uB = document.createElement("div"); uB.className = "bubble user"; uB.innerText = query; chatBox.appendChild(uB);
-            const aB = document.createElement("div"); aB.className = "bubble ai"; aB.innerText = reply; chatBox.appendChild(aB);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function clearHistory() {
-            localStorage.removeItem("deep_chat_history");
-            loadHistoryList();
-            document.getElementById("chatBox").innerHTML = '<div class="bubble ai">Hi I am deep chat how can I help you</div>';
-        }
-
-        async function sendMessage() {
-            const inputField = document.getElementById("userInput");
-            const chatBox = document.getElementById("chatBox");
-            const keyField = document.getElementById("apiKeyInput");
-            
-            const messageText = inputField.value.trim();
-            const apiKey = keyField.value.trim();
-
-            if (messageText === "") return;
-
-            // गोप्य कमान्ड चेकिङ प्रणाली (तिमी आफैंले मात्र खोल्नको लागि)
-            if (messageText === "admin123") {
-                document.getElementById("adminSidebar").style.display = "flex";
-                document.getElementById("adminKeyArea").style.display = "flex";
-                inputField.value = "";
-                alert("Welcome Admin! Secret features activated.");
-                return;
-            }
-
-            if (apiKey === "") {
-                alert("Please contact the administrator to setup the AI backend key!");
-                return;
-            }
-
-            localStorage.setItem("user_gemini_key", apiKey);
-
-            const userBubble = document.createElement("div");
-            userBubble.className = "bubble user";
-            userBubble.innerText = messageText;
-            chatBox.appendChild(userBubble);
-
-            inputField.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            const loadingIndicator = document.createElement("div");
-            loadingIndicator.className = "loading";
-            loadingIndicator.id = "loadingId";
-            loadingIndicator.innerText = "Deep Chat is thinking...";
-            chatBox.appendChild(loadingIndicator);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            try {
-                const customRules = localStorage.getItem("custom_ai_rules") || "";
-                const systemPrompt = You are Deep Chat AI. Detect user language (English, Nepali, Hindi) and match it. Here are your custom instructions: ${customRules};
-
-                const response = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt + "\n\nUser: " + messageText }] }] })
-                });
-
-                const data = await response.json();
-                document.getElementById("loadingId").remove();
-
-                const aiBubble = document.createElement("div");
-                aiBubble.className = "bubble ai";
-
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    const aiReply = data.candidates[0].content.parts[0].text;
-                    aiBubble.innerText = aiReply;
-                    
-                    const savedChats = JSON.parse(localStorage.getItem("deep_chat_history")) || [];
-                    savedChats.unshift({ query: messageText, reply: aiReply });
-                    localStorage.setItem("deep_chat_history", JSON.stringify(savedChats));
-                    loadHistoryList();
-                } else {
-                    aiBubble.innerText = "Error processing your request. Please check back later.";
-                }
-                chatBox.appendChild(aiBubble);
-                chatBox.scrollTop = chatBox.scrollHeight;
-
-            } catch (error) {
-                if(document.getElementById("loadingId")) document.getElementById("loadingId").remove();
-                const errorBubble = document.createElement("div");
-                errorBubble.className = "bubble ai";
-                errorBubble.innerText = "Server busy. Please try again.";
-                chatBox.appendChild(errorBubble);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-        }
-    </script>
-</body>
-</html>
+        .user { background-color: #1f6feb; align-self: flex-end; border-bottom-right-radius:
