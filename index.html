@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Gemini Chatbot</title>
+    <title>My Real Gemini AI Chatbot</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .chat-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 500px; box-sizing: border-box; }
@@ -19,7 +19,7 @@
 <div class="chat-container">
     <h2>My Gemini AI Chatbot</h2>
     
-    <input type="password" id="apiKeyInput" class="key-box" placeholder="यहाँ आफ्नो Gemini API Key टाँस्नुहोस्">
+    <input type="text" id="apiKeyInput" class="key-box" placeholder="यहाँ आफ्नो Gemini API Key टाँस्नुहोस्">
     
     <input type="text" id="chatInput" placeholder="के सोध्न चाहनुहुन्छ?">
     <button onclick="sendToGemini()">Send Message</button>
@@ -39,8 +39,8 @@ async function sendToGemini() {
 
     outputDiv.innerText = "जेमिनीले सोच्दैछ...";
 
-    // गुगलको आधिकारिक र सिधै चल्ने v1beta URL
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + userApiKey;
+    // यो सिधा र आधिकारिक गुगल जेमिनी कनेक्सन यूआरएल हो
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + userApiKey.trim();
 
     try {
         const response = await fetch(url, {
@@ -57,16 +57,15 @@ async function sendToGemini() {
 
         const data = await response.json();
         
-        // जेमिनीको वास्तविक जवाफ निकाल्ने सही तरिका
         if (data.candidates && data.candidates[0].content.parts[0].text) {
             outputDiv.innerText = data.candidates[0].content.parts[0].text;
         } else if (data.error) {
             outputDiv.innerText = "गुगल एरर: " + data.error.message;
         } else {
-            outputDiv.innerText = "केही गल्ती भयो। कृपया आफ्नो API Key चेक गर्नुहोला।";
+            outputDiv.innerText = "केही प्राविधिक गल्ती भयो। कृपया की (Key) फेरि चेक गर्नुहोस्।";
         }
     } catch (error) {
-        outputDiv.innerText = "सर्भर कनेक्सन भएन। कृपया इन्टरनेट चेक गर्नुहोस्।";
+        outputDiv.innerText = "सर्भर कनेक्ट भएन।";
         console.error(error);
     }
 }
