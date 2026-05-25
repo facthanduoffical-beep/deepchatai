@@ -20,9 +20,7 @@
     <h2>My Gemini AI Chatbot</h2>
     
     <input type="password" id="apiKeyInput" class="key-box" placeholder="यहाँ आफ्नो नयाँ Gemini API Key टाँस्नुहोस्">
-    
     <input type="text" id="chatInput" placeholder="के सोध्न चाहनुहुन्छ?">
-    
     <button onclick="sendToGemini()">Send</button>
 
     <h3>जवाफ:</h3>
@@ -46,8 +44,7 @@ async function sendToGemini() {
 
     outputDiv.innerText = "सोच्दैछ...";
 
-    // सही र सुरक्षित लिङ्क
-    const url = https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${userApiKey};
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + userApiKey;
 
     try {
         const response = await fetch(url, {
@@ -63,7 +60,7 @@ async function sendToGemini() {
         if (data.candidates && data.candidates[0].content.parts[0].text) {
             outputDiv.innerText = data.candidates[0].content.parts[0].text;
         } else {
-            outputDiv.innerText = "एरर आयो! तपाईंको API Key ब्लक भएको वा गलत हुन सक्छ।";
+            outputDiv.innerText = "एरर आयो! तपाईंको API Key गलत हुन सक्छ।";
         }
     } catch (error) {
         outputDiv.innerText = "सर्भरसँग कनेक्ट हुन सकेन।";
