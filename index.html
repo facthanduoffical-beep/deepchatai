@@ -44,7 +44,8 @@ async function sendToGemini() {
 
     outputDiv.innerText = "सोच्दैछ...";
 
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + userApiKey;
+    // अपडेट गरिएको नयाँ भर्सन र लिंक (यसले ४०४ एरर हटाउँछ)
+    const url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" + userApiKey;
 
     try {
         const response = await fetch(url, {
@@ -59,8 +60,10 @@ async function sendToGemini() {
         
         if (data.candidates && data.candidates[0].content.parts[0].text) {
             outputDiv.innerText = data.candidates[0].content.parts[0].text;
+        } else if (data.error) {
+            outputDiv.innerText = "गुगल एरर: " + data.error.message;
         } else {
-            outputDiv.innerText = "एरर आयो! तपाईंको API Key गलत हुन सक्छ।";
+            outputDiv.innerText = "जवाफ आएन, कृपया API Key र प्रोजेक्ट सेटिङ चेक गर्नुहोस्।";
         }
     } catch (error) {
         outputDiv.innerText = "सर्भरसँग कनेक्ट हुन सकेन।";
