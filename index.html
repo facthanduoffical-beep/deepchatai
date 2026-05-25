@@ -39,8 +39,8 @@ async function sendToGemini() {
 
     outputDiv.innerText = "जेमिनीले सोच्दैछ...";
 
-    // यहाँ 'gemini-pro' मोडेल राखेर लिङ्क फिक्स गरिएको छ, जसले एरर दिँदैन
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + userApiKey.trim();
+    // अपडेटेड: गुगलको नयाँ नियम अनुसार चल्ने पक्का मोडल 'gemini-1.5-pro' राखिएको लिङ्क
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + userApiKey.trim();
 
     try {
         const response = await fetch(url, {
@@ -62,7 +62,7 @@ async function sendToGemini() {
         } else if (data.error) {
             outputDiv.innerText = "गुगल एरर: " + data.error.message;
         } else {
-            outputDiv.innerText = "केही प्राविधिक त्रुटि भयो। कृपया की (Key) फेरि चेक गर्नुहोस्।";
+            outputDiv.innerText = "केही प्राविधिक त्रुटि भयो। कृपया आफ्नो API Key वा इन्टरनेट कनेक्सन जाँच्नुहोस्।";
         }
     } catch (error) {
         outputDiv.innerText = "सर्भर कनेक्ट हुन सकेन।";
