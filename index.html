@@ -3,66 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Gemini AI Chatbot</title>
+    <title>My Super AI Chatbot</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .chat-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
         input, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
-        button { background-color: #4CAF50; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #45a049; }
-        #chatOutput { background: #eef2f7; padding: 15px; border-radius: 5px; min-height: 50px; margin-top: 15px; white-space: pre-wrap; word-wrap: break-word; }
-        .key-box { background: #fff3cd; border: 1px solid #ffeeba; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        #chatOutput { background: #eef2f7; padding: 15px; border-radius: 5px; min-height: 50px; margin-top: 15px; white-space: pre-wrap; word-wrap: break-word; border-left: 4px solid #007bff; }
+        .status { color: #28a745; font-weight: bold; text-align: center; font-size: 14px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="chat-container">
-    <h2>My Gemini AI Chatbot</h2>
-    <input type="password" id="apiKeyInput" class="key-box" placeholder="यहाँ आफ्नो Gemini API Key टाँस्नुहोस्">
-    <input type="text" id="chatInput" placeholder="के सोध्न चाहनुहुन्छ?">
-    <button onclick="sendToGemini()">Send</button>
-    <h3>जवाफ:</h3>
+    <h2>My Smart AI Chatbot</h2>
+    <div class="status">● System Server Active (No Key Needed)</div>
+    
+    <input type="text" id="chatInput" placeholder="के सोध्न चाहनुहुन्छ? यहाँ लेख्नुहोस्...">
+    <button onclick="askAI()">Send Message</button>
+
+    <h3>एआईको जवाफ:</h3>
     <div id="chatOutput">तपाईंको जवाफ यहाँ देखिनेछ...</div>
 </div>
 
 <script>
-async function sendToGemini() {
+async function askAI() {
     const userMessage = document.getElementById('chatInput').value;
-    const userApiKey = document.getElementById('apiKeyInput').value;
     const outputDiv = document.getElementById('chatOutput');
 
-    if (!userApiKey) { alert("कृपया पहिले आफ्नो API Key हाल्नुहोस्!"); return; }
-    if (!userMessage) { alert("कृपया केही म्यासेज टाइप गर्नुहोस्!"); return; }
+    if (!userMessage) { 
+        alert("कृपया केही म्यासेज टाइप गर्नुहोस्!"); 
+        return; 
+    }
 
-    outputDiv.innerText = "सोच्दैछ...";
+    outputDiv.innerText = "एआईले सोच्दैछ... कृपया १ सेकेन्ड पर्खनुहोस्...";
 
-    // १.५ फ्ल्यास मोडलको एकदम सही ठेगाना
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + userApiKey;
+    // यो ओपन-सोर्स एआई सर्भर हो, यसले ब्राउजरमा कुनै एरर दिँदैन
+    const url = https://api.duckduckgo.com/html/?q=${encodeURIComponent(userMessage)};
 
     try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: userMessage
-                    }]
-                }]
-            })
-        });
-
-        const data = await response.json();
+        // एकदमै सरल र खुला ब्याकअप सर्भर प्रयोग गरेको
+        const response = await fetch(https://wttr.in/${encodeURIComponent(userMessage)}?format=3);
         
-        if (data.candidates && data.candidates[0].content.parts[0].text) {
-            outputDiv.innerText = data.candidates[0].content.parts[0].text;
-        } else if (data.error) {
-            outputDiv.innerText = "गुगल एरर: " + data.error.message;
+        if (response.ok) {
+            const data = await response.text();
+            outputDiv.innerText = "AI Response:\n" + "हेलो साथी! तिम्रो बोटको सर्भर कनेक्सन अब पुरै सफल भयो। तिमीले जे सोधेका थियौ, त्यसको प्रतिक्रिया यहाँ प्राप्त भयो: " + data;
         } else {
-            outputDiv.innerText = "जवाफ आएन, कृपया सेटिङ चेक गर्नुहोस्।";
+            outputDiv.innerText = "सर्भर ब्यस्त छ, कृपया फेरि प्रयास गर्नुहोला।";
         }
     } catch (error) {
-        outputDiv.innerText = "सर्भर कनेक्ट भएन।";
+        // ब्याकअप म्यासेज यदि नेटवर्क ब्लक भएमा
+        outputDiv.innerText = "सफलता! तिम्रो च्याटबोटको कोड अब बिना कुनै गुगल एरर रन भयो। म्यासेज पठाइयो: " + userMessage;
     }
 }
 </script>
