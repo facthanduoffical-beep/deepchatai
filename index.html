@@ -3,15 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Real Gemini AI Chatbot</title>
+    <title>My Gemini AI Chatbot</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .chat-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 500px; box-sizing: border-box; }
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
-        button { background-color: #1a73e8; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #1557b0; }
-        #chatOutput { background: #eef2f7; padding: 15px; border-radius: 5px; min-height: 50px; margin-top: 15px; white-space: pre-wrap; word-wrap: break-word; border-left: 5px solid #1a73e8; color: #333; }
-        .key-box { background: #fff3cd; border: 1px solid #ffeeba; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .chat-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            box-sizing: border-box;
+            margin: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333333;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666666;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, textarea :focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        .response-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4a90e2;
+            border-radius: 4px;
+            min-height: 50px;
+            color: #333333;
+            white-space: pre-wrap;
+            font-size: 15px;
+        }
+        .error {
+            border-left-color: #d0021b;
+            background-color: #fff5f5;
+            color: #d0021b;
+        }
     </style>
 </head>
 <body>
@@ -19,27 +96,39 @@
 <div class="chat-container">
     <h2>My Gemini AI Chatbot</h2>
     
-    <input type="text" id="apiKeyInput" class="key-box" placeholder="यहाँ आफ्नो Gemini API Key टाँस्नुहोस्">
+    <div class="input-group">
+        <input type="text" id="apiKey" placeholder="यहाँ आफ्नो Gemini API Key हाल्नुहोस्...">
+    </div>
     
-    <input type="text" id="chatInput" placeholder="के सोध्न चाहनुहुन्छ?">
-    <button onclick="sendToGemini()">Send Message</button>
-
+    <div class="input-group">
+        <textarea id="userMessage" placeholder="के सोध्न चाहनुहुन्छ?"></textarea>
+    </div>
+    
+    <button onclick="sendMessage()">Send Message</button>
+    
     <h3>जेमिनीको वास्तविक जवाफ:</h3>
-    <div id="chatOutput">तपाईंको जवाफ यहाँ देखिनेछ...</div>
+    <div id="response" class="response-box">तपाईंको जवाफ यहाँ देखिनेछ...</div>
 </div>
 
 <script>
-async function sendToGemini() {
-    const userMessage = document.getElementById('chatInput').value;
-    const userApiKey = document.getElementById('apiKeyInput').value;
-    const outputDiv = document.getElementById('chatOutput');
+async function sendMessage() {
+    const userApiKey = document.getElementById('apiKey').value;
+    const message = document.getElementById('userMessage').value;
+    const responseBox = document.getElementById('response');
 
-    if (!userApiKey) { alert("कृपया पहिले आफ्नो API Key हाल्नुहोस्!"); return; }
-    if (!userMessage) { alert("कृपया केही म्यासेज टाइप गर्नुहोस्!"); return; }
+    if (!userApiKey.trim()) {
+        alert("कृपया पहिला आफ्नो API Key हाल्नुहोस्!");
+        return;
+    }
+    if (!message.trim()) {
+        alert("कृपया केही म्यासेज टाइप गर्नुहोस्!");
+        return;
+    }
 
-    outputDiv.innerText = "जेमिनीले सोच्दैछ...";
+    responseBox.classList.remove('error');
+    responseBox.innerText = "सोच्दैछ...";
 
-    // अपडेटेड: गुगलको नयाँ नियम अनुसार चल्ने पक्का मोडल 'gemini-1.5-pro' राखिएको लिङ्क
+    // यहाँ १.५ फ्ल्यास मोडल र v1 भर्सन एकदम सही तरिकाले राखिएको छ
     const url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + userApiKey.trim();
 
     try {
@@ -47,28 +136,28 @@ async function sendToGemini() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: userMessage
-                    }]
-                }]
+                contents: [{ parts: [{ text: message }] }]
             })
         });
 
         const data = await response.json();
-        
-        if (data.candidates && data.candidates[0].content.parts[0].text) {
-            outputDiv.innerText = data.candidates[0].content.parts[0].text;
-        } else if (data.error) {
-            outputDiv.innerText = "गुगल एरर: " + data.error.message;
+
+        if (response.ok) {
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                responseBox.innerText = data.candidates[0].content.parts[0].text;
+            } else {
+                responseBox.innerText = "जवाफ खाली आयो, कृपया फेरि प्रयास गर्नुहोस्।";
+            }
         } else {
-            outputDiv.innerText = "केही प्राविधिक त्रुटि भयो। कृपया आफ्नो API Key वा इन्टरनेट कनेक्सन जाँच्नुहोस्।";
+            responseBox.classList.add('error');
+            responseBox.innerText = "गुगल एरर: " + (data.error ? data.error.message : "नचिनेको समस्या आयो।");
         }
     } catch (error) {
-        outputDiv.innerText = "सर्भर कनेक्ट हुन सकेन।";
-        console.error(error);
+        responseBox.classList.add('error');
+        responseBox.innerText = "नेटवर्क एरर: सर्भरसँग कनेक्सन हुन सकेन।";
     }
 }
 </script>
+
 </body>
 </html>
