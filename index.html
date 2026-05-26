@@ -129,7 +129,7 @@ async function sendMessage() {
     responseBox.innerText = "सोच्दैछ...";
 
     // यहाँ १.५ फ्ल्यास मोडल र v1 भर्सन एकदम सही तरिकाले राखिएको छ
-    const url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + userApiKey.trim();
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + userApiKey.trim();
 
     try {
         const response = await fetch(url, {
