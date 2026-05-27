@@ -1,163 +1,50 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Gemini AI Chatbot</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .chat-container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            padding: 25px;
-            box-sizing: border-box;
-            margin: 20px;
-        }
-        h2 {
-            text-align: center;
-            color: #333333;
-            margin-top: 0;
-            font-size: 24px;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #666666;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cccccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 15px;
-            transition: border-color 0.3s;
-        }
-        input[type="text"]:focus, textarea :focus {
-            border-color: #4a90e2;
-            outline: none;
-        }
-        textarea {
-            height: 100px;
-            resize: vertical;
-        }
-        button {
-            width: 100%;
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #357abd;
-        }
-        .response-box {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-left: 4px solid #4a90e2;
-            border-radius: 4px;
-            min-height: 50px;
-            color: #333333;
-            white-space: pre-wrap;
-            font-size: 15px;
-        }
-        .error {
-            border-left-color: #d0021b;
-            background-color: #fff5f5;
-            color: #d0021b;
-        }
-    </style>
+  <title>My Gemini AI Chatbot</title>
 </head>
 <body>
+  <h2>My Gemini AI Chatbot</h2>
 
-<div class="chat-container">
-    <h2>My Gemini AI Chatbot</h2>
-    
-    <div class="input-group">
-        <input type="text" id="apiKey" placeholder="यहाँ आफ्नो Gemini API Key हाल्नुहोस्...">
-    </div>
-    
-    <div class="input-group">
-        <textarea id="userMessage" placeholder="के सोध्न चाहनुहुन्छ?"></textarea>
-    </div>
-    
-    <button onclick="sendMessage()">Send Message</button>
-    
-    <h3>जेमिनीको वास्तविक जवाफ:</h3>
-    <div id="response" class="response-box">तपाईंको जवाफ यहाँ देखिनेछ...</div>
-</div>
+  <input id="apiKey" placeholder="Paste API Key here" style="width: 400px;" />
+  <br><br>
 
-<script>
-async function sendMessage() {
-    const userApiKey = document.getElementById('apiKey').value;
-    const message = document.getElementById('userMessage').value;
-    const responseBox = document.getElementById('response');
+  <textarea id="input" placeholder="Type message" rows="5" cols="50"></textarea>
+  <br><br>
 
-    if (!userApiKey.trim()) {
-        alert("कृपया पहिला आफ्नो API Key हाल्नुहोस्!");
-        return;
-    }
-    if (!message.trim()) {
-        alert("कृपया केही म्यासेज टाइप गर्नुहोस्!");
-        return;
-    }
+  <button onclick="sendMessage()">Send Message</button>
 
-    responseBox.classList.remove('error');
-    responseBox.innerText = "सोच्दैछ...";
+  <h3>Gemini's real answer:</h3>
+  <pre id="output"></pre>
 
-    // यहाँ १.५ फ्ल्यास मोडल र v1 भर्सन एकदम सही तरिकाले राखिएको छ
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + userApiKey.trim();
+  <script>
+    async function sendMessage() {
+      let userText = document.getElementById("input").value;
+      let apiKey = document.getElementById("apiKey").value;
 
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: message }] }]
-            })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                responseBox.innerText = data.candidates[0].content.parts[0].text;
-            } else {
-                responseBox.innerText = "जवाफ खाली आयो, कृपया फेरि प्रयास गर्नुहोस्।";
-            }
-        } else {
-            responseBox.classList.add('error');
-            responseBox.innerText = "गुगल एरर: " + (data.error ? data.error.message : "नचिनेको समस्या आयो।");
+      let response = await fetch(
+        "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + apiKey,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: userText }]
+              }
+            ]
+          })
         }
-    } catch (error) {
-        responseBox.classList.add('error');
-        responseBox.innerText = "नेटवर्क एरर: सर्भरसँग कनेक्सन हुन सकेन।";
-    }
-}
-</script>
+      );
 
+      let data = await response.json();
+
+      document.getElementById("output").innerText =
+        data.candidates?.[0]?.content?.parts?.[0]?.text
+        || JSON.stringify(data, null, 2);
+    }
+  </script>
 </body>
 </html>
